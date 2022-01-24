@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Sri2103/bookings/pkg/config"
@@ -33,7 +34,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
-	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "home.page.html", &models.TemplateData{})
 }
 
 // About is the handler for the about page
@@ -46,7 +47,7 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap["remote_ip"] = remoteIP
 
 	// send data to the template
-	render.RenderTemplate(w, "about.page.html", &models.TemplateData{
+	render.RenderTemplate(w, r, "about.page.html", &models.TemplateData{
 		StringMap: stringMap,
 	})
 }
@@ -54,28 +55,37 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 // renders the room page
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
-	render.RenderTemplate(w, "generals.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "generals.page.html", &models.TemplateData{})
 
 }
 
 // renders the room page
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
-	render.RenderTemplate(w, "majors.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "majors.page.html", &models.TemplateData{})
 
 }
 
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
-	render.RenderTemplate(w, "search-availability.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "search-availability.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
+	// perform some logic
+	// render.RenderTemplate(w, "search-availability.page.html", &models.TemplateData{})
+
+	start := r.Form.Get("start")
+	end := r.Form.Get("end")
+	w.Write([]byte(fmt.Sprintf("start date is %s and end date is %s", start, end)))
 }
 
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
-	render.RenderTemplate(w, "contact.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "contact.page.html", &models.TemplateData{})
 }
 
 func (m *Repository) MakeReservation(w http.ResponseWriter, r *http.Request) {
 	// perform some logic
-	render.RenderTemplate(w, "make-reservation.page.html", &models.TemplateData{})
+	render.RenderTemplate(w, r, "make-reservation.page.html", &models.TemplateData{})
 }
