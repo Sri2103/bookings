@@ -24,6 +24,9 @@ func NewTemplates(a *config.AppConfig) {
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.CSRFToken = nosurf.Token(r)
+	td.Flash = app.Session.PopString(r.Context(), "flash")
+	td.Warning = app.Session.PopString(r.Context(), "warning")
+	td.Error = app.Session.PopString(r.Context(), "error")
 
 	return td
 }
@@ -47,6 +50,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, html string, td *mod
 	buf := new(bytes.Buffer)
 
 	td = AddDefaultData(td, r)
+	log.Println(app.Session)
 
 	_ = t.Execute(buf, td)
 
