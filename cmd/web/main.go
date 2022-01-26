@@ -21,9 +21,10 @@ var session *scs.SessionManager
 
 // main is the main function
 func main() {
-	// change this to true when in production
+	// what am I going to put in the session
 	gob.Register(models.Reservation{})
 
+	// change this to true when in production
 	app.InProduction = false
 
 	// set up the session
@@ -48,7 +49,7 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	fmt.Printf("Staring application on port %s", portNumber)
+	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
 	srv := &http.Server{
 		Addr:    portNumber,
