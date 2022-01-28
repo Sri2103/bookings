@@ -22,7 +22,7 @@ var session *scs.SessionManager
 // main is the main function
 func main() {
 
-	err := Run()
+	err := run()
 
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +41,7 @@ func main() {
 	}
 }
 
-func Run() error {
+func run() error {
 
 	// what am I going to put in the session
 	gob.Register(models.Reservation{})
