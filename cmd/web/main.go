@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Sri2103/bookings/internal/config"
@@ -18,6 +19,8 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLogger *log.Logger
+var errorLogger *log.Logger
 
 // main is the main function
 func main() {
@@ -28,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(fmt.Printf("Staring application on port %s", portNumber))
+	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -48,6 +51,12 @@ func run() error {
 
 	// change this to true when in production
 	app.InProduction = false
+	infoLogger = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+
+	app.InfoLog = infoLogger
+
+	errorLogger = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLogger
 
 	// set up the session
 	session = scs.New()
