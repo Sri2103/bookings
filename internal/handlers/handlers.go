@@ -113,41 +113,10 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// sd := r.Form.Get("start_date")
-	// ed := r.Form.Get("end_date")
-	// //  2020-01-01 ---------01/02 03:04:05PM '06 -0700(standard format)
-	// layout := "2006-01-02"
-	// startDate, err := time.Parse(layout, sd)
-	// if err != nil {
-	// 	helpers.ServerError(w, err)
-	// 	return
-	// }
-	// endDate, err := time.Parse(layout, ed)
-	// if err != nil {
-	// 	helpers.ServerError(w, err)
-	// 	return
-	// }
-
-	// roomId, err := strconv.Atoi(r.Form.Get("room_id"))
-	// if err != nil {
-	// 	helpers.ServerError(w, err)
-	// 	return
-	// }
-
 	reservation.FirstName = r.Form.Get("first_name")
 	reservation.LastName = r.Form.Get("last_name")
 	reservation.Email = r.Form.Get("email")
 	reservation.Phone = r.Form.Get("phone")
-
-	// reservation := models.Reservation{
-	// 	FirstName: r.Form.Get("first_name"),
-	// 	LastName:  r.Form.Get("last_name"),
-	// 	Email:     r.Form.Get("email"),
-	// 	Phone:     r.Form.Get("phone"),
-	// 	StartDate: startDate,
-	// 	EndDate:   endDate,
-	// 	RoomID:    roomId,
-	// }
 
 	form := forms.New(r.PostForm)
 
@@ -228,10 +197,6 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// for _, i := range rooms {
-	// 	m.App.InfoLog.Println("room :", i.ID, i.RoomName)
-	// }
-
 	if len(rooms) == 0 {
 		m.App.Session.Put(r.Context(), "error", "No Availability")
 		http.Redirect(w, r, "/search-availability", http.StatusSeeOther)
@@ -261,9 +226,34 @@ type jsonResponse struct {
 
 // AvailabilityJSON handles request for availability and sends JSON response
 func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+
+	layout := "2006-01-02"
+
+	sd := r.Form.Get("start")
+	ed := r.Form.Get("end")
+
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	roomId, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	available, err := m.DB.SearchAvailabilityByDatesByRoomID(roomId, startDate, endDate)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
 	resp := jsonResponse{
-		OK:      true,
-		Message: "Available!",
+		OK:      available,
+		Message: "",
 	}
 
 	out, err := json.MarshalIndent(resp, "", "     ")
