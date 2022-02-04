@@ -44,7 +44,7 @@ func TestRenderTemplate(t *testing.T) {
 
 	var ww myWriter
 
-	err = Template(&ww, r, "home.page.gohtml", &models.TemplateData{})
+	err = Template(&ww, r, "home.page.html", &models.TemplateData{})
 
 	if err != nil {
 		t.Error("error writing template to browser")
