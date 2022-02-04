@@ -26,7 +26,7 @@ func TestADdDefaultData(t *testing.T) {
 
 }
 
-func TestRenderTemplate(t *testing.T) {
+func TestTemplate(t *testing.T) {
 	pathToTemplates = "./../../templates"
 
 	tc, err := CreateTemplateCache()
@@ -68,7 +68,7 @@ func getSession() (*http.Request, error) {
 
 }
 
-func TestNewTemplates(t *testing.T) {
+func TestNewRenderer(t *testing.T) {
 
 	NewRenderer(app)
 
