@@ -8,13 +8,16 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/Sri2103/bookings/internal/config"
 	"github.com/Sri2103/bookings/internal/models"
 	"github.com/justinas/nosurf"
 )
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"humanDate": HumanDate,
+}
 
 var app *config.AppConfig
 
@@ -25,17 +28,25 @@ func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
+//HumanDate returns date in yyyy-mm-dd format
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
+
 // AddDefaultData adds data for all templates
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.Flash = app.Session.PopString(r.Context(), "flash")
 	td.Warning = app.Session.PopString(r.Context(), "warning")
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.CSRFToken = nosurf.Token(r)
+	if app.Session.Exists(r.Context(), "user_id") {
+		td.IsAuthenticated = 1
+	}
 	return td
 }
 
 //Template renders a template
-func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
+func Template(w http.ResponseWriter, r *http.Request, html string, td *models.TemplateData) error {
 	var tc map[string]*template.Template
 
 	if app.UseCache {
@@ -45,7 +56,7 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *models.Te
 		tc, _ = CreateTemplateCache()
 	}
 
-	t, ok := tc[tmpl]
+	t, ok := tc[html]
 	if !ok {
 		log.Fatal("Could not get template from template cache")
 		return errors.New("can't get template from the Cache")
